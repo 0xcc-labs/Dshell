@@ -8,7 +8,6 @@ import sys
 import logging
 import struct
 import datetime
-import dshell
 import util
 
 
@@ -159,8 +158,7 @@ class Output(object):
         rec = dict((f, self._NULL) for f in self.fieldnames)
         # populate record from datadict if datadict key is a field
         if self._FILTER_EXTRA:
-            rec.update(
-                dict((f, kw[f]) for f in self.fieldnames if (f in kw and kw[f] != None)))
+            rec.update(dict((f, kw[f]) for f in self.fieldnames if (f in kw and kw[f] is not None)))
             # place extra datadict keys into the extra field (and exclude the
             # addr tuple)
             if self.extra:
@@ -544,11 +542,14 @@ class QueueOutput(Output):
         self.queue = q
         Output.__init__(self, **kwargs)
 
-    def write(self, *args, **kw): self.dispatch('write', *args, **kw)
+    def write(self, *args, **kw):
+        self.dispatch('write', *args, **kw)
 
-    def alert(self, *args, **kw): self.dispatch('alert', *args, **kw)
+    def alert(self, *args, **kw):
+        self.dispatch('alert', *args, **kw)
 
-    def dump(self, *args, **kw): self.dispatch('dump', *args, **kw)
+    def dump(self, *args, **kw):
+        self.dispatch('dump', *args, **kw)
 
     def dispatch(self, m, *args, **kw):  # takes (method,...) to Q
         self.queue.put((m, args, kw))

@@ -2,9 +2,7 @@
 @author: tparker
 '''
 
-import output
-import util
-import dshell
+from dshell import output
 from xml.etree import ElementTree as ET
 
 
@@ -46,10 +44,11 @@ class XMLOutput(output.FileOutput):
         # leave this up to the object to handle
         e.text = self._filter_text(str(obj))
 
-    def _filter_attr(self, d): return dict((k, str(v))
-                                           for (k, v) in d.iteritems())
+    def _filter_attr(self, d):
+        return dict((k, str(v)) for (k, v) in d.iteritems())
 
-    def _filter_text(self, t): return ''.join(c for c in t if ord(c) < 128)
+    def _filter_text(self, t):
+        return ''.join(c for c in t if ord(c) < 128)
 
     def close(self):
         '''write the ElementTree to the file'''

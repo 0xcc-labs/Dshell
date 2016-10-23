@@ -7,7 +7,6 @@ import util
 import dshell
 import sys
 import cgi
-import string
 import datetime
 
 
@@ -110,7 +109,6 @@ class ColorOutput(output.TextOutput):
         # Call parent init
         output.TextOutput.__init__(self, format=fmtstr, **kwargs)
 
-
         # In HTML mode, if we get any single call
         # to write() with the time option set, we will set
         # this master boolean value to True and display all timestamps
@@ -124,7 +122,6 @@ class ColorOutput(output.TextOutput):
 
         if self._COLORMODE == 'HTML':
             self._htmlwrite(self._HTMLHeader(self.title))
-
 
     def setColorMode(self):
         # Determine output mode
@@ -200,13 +197,13 @@ class ColorOutput(output.TextOutput):
             self._reset_offsets(kw['offset'])
 
         # KW Timestamp
-        if 'timestamp' in kw and kw['timestamp'] != None:
+        if 'timestamp' in kw and kw['timestamp'] is not None:
             kwtimestamp = kw['timestamp']
         else:
             kwtimestamp = None
 
         # KW Encoding (to specify character encoding)
-        if 'encoding' in kw and kw['encoding'] != None:
+        if 'encoding' in kw and kw['encoding'] is not None:
             kwencoding = kw['encoding']
         else:
             kwencoding = None
@@ -239,11 +236,11 @@ class ColorOutput(output.TextOutput):
         colorTag = ''
 
         # Print TimestampcolorTag
-        if self._COLORMODE == 'HTML' and timestamp != None:
+        if self._COLORMODE == 'HTML' and timestamp is not None:
             self._htmlwrite('<div class="timestamp">\n%s UTC:</div>' %
                             datetime.datetime.utcfromtimestamp(timestamp))
-            #if self._hexmode: self._htmlwrite("<br>")
-        elif self._COLORMODE == 'TTY' and self._timemode and timestamp != None:
+            # if self._hexmode: self._htmlwrite("<br>")
+        elif self._COLORMODE == 'TTY' and self._timemode and timestamp is not None:
             self.fh.write('\x1b[36m%s UTC:\x1b[0m\n' %
                           datetime.datetime.utcfromtimestamp(timestamp))
             if self.nobuffer:

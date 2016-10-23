@@ -4,9 +4,7 @@ Created on May 6, 2015
 @author: amm
 '''
 
-import sys
 import output
-import dshell
 import dfile
 import logging
 import datetime
@@ -71,7 +69,7 @@ class elasticout(output.TextOutput):
         # Document Type
         #
         if 'doc_type' in kwargs:
-        	self._DOC_TYPE = kwargs['doc_type']
+            self._DOC_TYPE = kwargs['doc_type']
 
         #
         # Handle boolean options
@@ -104,51 +102,37 @@ class elasticout(output.TextOutput):
         output.TextOutput.__init__(self, **kwargs)
 
     def alert(self, *args, **kw):
-
-        #
-        # DocType
-        #
         if self._DOC_TYPE:
-        	doc_type = self._DOC_TYPE
+            doc_type = self._DOC_TYPE
         elif 'decoder' in kw:
-          doc_type = kw['decoder']
-          del kw['decoder']
+            doc_type = kw['decoder']
+            del kw['decoder']
         else:
-        	doc_type = 'dshell'
+            doc_type = 'dshell'
 
-        #
         # Remove Common Redundant Fields
-        #
         if not self.options['notrim']:
             for name in self._DELETE_FIELDS:
                 if name in kw:
                     del kw[name]
 
-        #
         # Time Fields
-        #
         # Rename 'ts' to 'starttime' if 'starttime' not present
         if 'ts' in kw:
             if 'starttime' not in kw:
                 kw['starttime'] = kw['ts']
             del kw['ts']
 
-        #
         # Remove GEOIP Fields
-        #
         if not self.options['geoip']:
             for name in self._GEO_FIELDS:
                 if name in kw:
                     del kw[name]
 
-        #
         # Perform multiple tasks, iterating across the kw dict
-        #
         for k in kw.keys():
-            #
             # Convert known timestamp fields to datetime format
             #  Remove empty fields
-            #
             if k.lower() in self._TIMESTAMP_FIELDS:
                 if type(kw[k]) == datetime:
                     continue

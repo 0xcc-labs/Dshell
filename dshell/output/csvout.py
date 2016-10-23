@@ -3,7 +3,6 @@
 '''
 
 import output
-import util
 
 
 class CSVOutput(output.TextOutput):
@@ -60,11 +59,10 @@ class CSVOutput(output.TextOutput):
         # build format string to pass to textoutput
         if fmtstr:
             fmtstr += self.delim
-        fmtstr += self.delim.join(['%%(%s)%s' % (f, t) for f, t in self.fields])
+        fmtstr += self.delim.join(['%%(%s)%s' % (k, v) for k, v in self.fields])
 
         # everything else is exactly like the text output module
         output.TextOutput.__init__(self, format=fmtstr, **kwargs)
-
 
     def setup(self):
         # print header if not suppressed

@@ -36,7 +36,7 @@ class JSONOutput(output.TextOutput):
         for o in ('geoip', 'notrim', 'ensure_ascii'):
             self.options[o] = False
             if o in kwargs:
-                if kwargs[o] == True or kwargs[o].upper() in ('Y', 'T', '1', 'YES', 'ON', 'TRUE'):
+                if kwargs[o] or kwargs[o].upper() in ('Y', 'T', '1', 'YES', 'ON', 'TRUE'):
                     self.options[o] = True
                 del kwargs[o]
 
@@ -56,12 +56,11 @@ class JSONOutput(output.TextOutput):
         if self.nobuffer:
             self.fh.flush()
 
-
     # Reusable function to filter data in alerts and writes
     def _filter_data(self, kw):
 
         # User specified field list??
-        if self.jsonfields != None:
+        if self.jsonfields is not None:
             for f in kw.keys():
                 if f not in self.jsonfields:
                     del kw[f]
@@ -90,46 +89,43 @@ class JSONOutput(output.TextOutput):
                         del kw[name]
 
         outdata = {}
-        for n,v in kw.iteritems():
+        for n, v in kw.iteritems():
             if not isinstance(v, dfile.dfile):
-              outdata[n] = v
+                outdata[n] = v
 
         return outdata
 
+    def write(self, *args, **kw):
+        # Iterate *args
+        for a in args:
+            if type(a) == dshell.Blob:
+                self.fh.write(json.dumps(self._blob_to_dict(a), ensure_ascii=self.options['ensure_ascii']) + "\n")
+            elif type(a) == dshell.Connection:
+                outdata = self._filter_data(a.info())
+                outdata['type'] = 'conn'
+                outdata['data'] = []
+                for blob in a:
+                    # self._write_blob(blob, kw)
+                    outdata['data'].append(self._blob_to_dict(blob))
+                    self.fh.write(json.dumps(outdata, ensure_ascii=self.options['ensure_ascii']) + "\n")
+            else:
+                d = self._filter_data(kw)
+                d['type'] = 'raw'
+                if type(a) == unicode:
+                    d['data'] = base64.b64encode(a.encode('utf-8'))
+                else:
+                    d['data'] = base64.b64encode(a)
+                self.fh.write(json.dumps(d, ensure_ascii=self.options['ensure_ascii']) + "\n")
 
-    def write(self,*args,**kw):
-  
-      # Iterate *args
-      for a in args:
-        if type(a) == dshell.Blob:
-          self.fh.write(json.dumps(self._blob_to_dict(blob), ensure_ascii=self.options['ensure_ascii']) + "\n")
-        elif type(a) == dshell.Connection:
-          outdata = self._filter_data(a.info())
-          outdata['type'] = 'conn'
-          outdata['data'] = []
-          for blob in a:
-            #self._write_blob(blob, kw)
-            outdata['data'].append(self._blob_to_dict(blob))
-          self.fh.write(json.dumps(outdata, ensure_ascii=self.options['ensure_ascii']) + "\n")
-        else:
-          d = self._filter_data(kw)
-          d['type'] = 'raw'
-          if type(a) == unicode:
-            d['data'] = base64.b64encode(a.encode('utf-8'))
-          else:
-            d['data'] = base64.b64encode(a)
-          self.fh.write(json.dumps(d, ensure_ascii=self.options['ensure_ascii']) + "\n")
-  
     # Custom error handler for data reassembly --- ignores all errors
     def errorH(self, **x):
-      return True
-  
-    def _blob_to_dict(self, blob):
-      d = self._filter_data(blob.info())
-      d['type'] = 'blob'
-      d['data'] = base64.b64encode(blob.data(errorHandler=self.errorH))
-      return d
+        return True
 
+    def _blob_to_dict(self, blob):
+        d = self._filter_data(blob.info())
+        d['type'] = 'blob'
+        d['data'] = base64.b64encode(blob.data(errorHandler=self.errorH))
+        return d
 
 
 obj = JSONOutput

@@ -3,8 +3,6 @@
 '''
 
 import output
-import util
-import sys
 import datetime
 
 
@@ -15,8 +13,8 @@ class NetflowOutput(output.TextOutput):
     use with --output=netflowoutput
 `       use group=clientip,serverip for grouping by clientip,serverip
     '''
-    #_DEFAULT_FIELDS=[('decoder','s'),('datetime','s'),('sip','s'),('sport','s'),('dip','s'),('dport','s')]
-    #_DEFAULT_FORMAT="%(starttime)s %(sip)16s:%(sport)-5s -> %(dip)16s:%(dport)-5s"
+    # _DEFAULT_FIELDS=[('decoder','s'),('datetime','s'),('sip','s'),('sport','s'),('dip','s'),('dport','s')]
+    # _DEFAULT_FORMAT="%(starttime)s %(sip)16s:%(sport)-5s -> %(dip)16s:%(dport)-5s"
 
     def __init__(self, *args, **kwargs):
         self.group = kwargs.get('group')
