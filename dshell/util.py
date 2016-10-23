@@ -150,7 +150,7 @@ def hexPlusAscii(data, width=16, offset=0):
 
 
 def URLDataToParameterDict(data):
-    if not ' ' in data:
+    if ' ' not in data:
         p, kwp = strtok(data, sep='&')
         return dict((urllib.unquote(k), urllib.unquote(kwp[k]))for k in kwp.keys())
 
@@ -201,10 +201,12 @@ def xorStringDecode(key=None, data=None):
     return ptext
 
 
-def iptoint(ip): return struct.unpack('!L', socket.inet_aton(ip))[0]
+def iptoint(ip):
+    return struct.unpack('!L', socket.inet_aton(ip))[0]
 
 
-def inttoip(i): return socket.inet_ntoa(struct.pack('!L', i))
+def inttoip(i):
+    return socket.inet_ntoa(struct.pack('!L', i))
 
 # universal q&d options parser
 # standard args:

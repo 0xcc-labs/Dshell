@@ -1,9 +1,3 @@
-"""
-Dshell base classes
-"""
-
-__version__ = "3.0"
-
 import dpkt
 import struct
 import socket
@@ -11,12 +5,10 @@ import traceback
 import util
 import os
 import logging
+import pygeoip
 
-# For IP lookups
-try:
-    import pygeoip
-except:
-    pass
+
+__version__ = '3.0.0'
 
 
 class Decoder(object):
@@ -132,8 +124,7 @@ class Decoder(object):
         if kwargs:
             self.__dict__.update(kwargs)
 
-    ### convenience functions for alert output and logging ###
-
+    # convenience functions for alert output and logging
     def alert(self, *args, **kw):
         '''sends alert to output handler
                 typically self.alert will be called with the decoded data and the packet/connection info dict last, as follows:
@@ -561,9 +552,9 @@ class IPDecoder(Decoder):
                     sport, dport = None, None
                 # generate int forms of src/dest ips
                 h, l = struct.unpack("!QQ", pkt.src)
-                sipint = ( (h << 64) | l )
+                sipint = ((h << 64) | l)
                 h, l = struct.unpack("!QQ", pkt.dst)
-                dipint = ( (h << 64) | l )
+                dipint = ((h << 64) | l)
                 # call ipv6 handler
                 self.IPHandler(((sip, sport), (dip, dport)), pkt, ts,
                                pkttype=dpkt.ethernet.ETH_TYPE_IP6,
@@ -708,7 +699,7 @@ class TCPDecoder(UDPDecoder):
             # close connection
             conn = self.find(addr)
             if tcp.flags & (dpkt.tcp.TH_FIN | dpkt.tcp.TH_RST) and conn:
-                conn.closeIP(addr[0]) #track if FIN has been seen in connection
+                conn.closeIP(addr[0])  # track if FIN has been seen in connection
             if conn and conn.connectionClosed():
                 # we might occasionally have data in a FIN packet
                 self.track(addr, str(tcp.data), ts, offset=tcp.seq)
@@ -793,9 +784,11 @@ class Data(object):
     def __repr__(self):
         return ' '.join(['%s=%s' % (k, v) for k, v in self.info().iteritems()])
 
-    def __getitem__(self, k): return self.__dict__[k]
+    def __getitem__(self, k):
+        return self.__dict__[k]
 
-    def __setitem__(self, k, v): self.__dict__[k] = v
+    def __setitem__(self, k, v):
+        self.__dict__[k] = v
 
 
 class Packet(Data):
@@ -869,7 +862,7 @@ class Connection(Packet):
             stop: if True, stopped following stream
 
     """
-    
+
     MAX_OFFSET = 0xffffffff  # max offset before wrap, default is MAXINT32 for TCP sequence numbers
 
     def __init__(self, decoder, addr, ts=None, **kwargs):
@@ -938,7 +931,7 @@ class Connection(Packet):
         # if we have no blobs or direction changes, start a new blob
         lastblob = None
         if len(self.blobs) > 1 and self.blobs[-2].startoffset <= offset < self.blobs[-2].endoffset:
-            self.blobs[-2].update(ts,data,offset=offset)
+            self.blobs[-2].update(ts, data, offset=offset)
         else:
             if direction != self.direction:
                 self.direction = direction
@@ -960,7 +953,7 @@ class Connection(Packet):
         self.endtime = ts
         # if we are tracking offsets, expect the next blob to be where this one
         # ends so far
-        if offset != None and ((offset + len(data)) & self.MAX_OFFSET) >= self.nextoffset[direction]:
+        if offset is not None and ((offset + len(data)) & self.MAX_OFFSET) >= self.nextoffset[direction]:
             self.nextoffset[direction] = (offset + len(data)) & self.MAX_OFFSET
         return lastblob
 
@@ -1006,7 +999,7 @@ class Blob(Data):
 
     def update(self, ts, data, offset=None):
         # if offsets are not being provided, just keep packets in wire order
-        if offset == None:
+        if offset is None:
             offset = self.endoffset
         # buffer each segment in a list, keyed by offset (captures retrans,
         # etc)
