@@ -11,3 +11,4 @@ env/
 
 # due to using tox and pytest
 .cache
+.tox/
