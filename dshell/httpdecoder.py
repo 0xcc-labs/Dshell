@@ -48,7 +48,7 @@ class HTTPDecoder(dshell.TCPDecoder):
                     response = dpkt.http.Response(blob.data(self.errorH))
                     if self.gunzip and 'gzip' in util.getHeader(response, 'content-encoding'):
                         bodyUnzip = self.decompressGzipContent(response.body)
-                        if bodyUnzip != None:
+                        if bodyUnzip is not None:
                             response.body = bodyUnzip
                     self.HTTPHandler(conn=conn,
                                      request=self.requests[conn][1],

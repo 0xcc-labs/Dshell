@@ -14,7 +14,7 @@ Will call SMBHandler(
                                        messages from the server to the client
             )
 
-Requests are tracked by MID 
+Requests are tracked by MID
 
 It will be up to the decoder to handle each SMB Command.
 
@@ -30,7 +30,7 @@ References:
 
 import dshell
 import struct
-#import binascii
+# import binascii
 
 SMB_PROTOCOL = '\xffSMB'
 SMB_STATUS_SUCCESS = 0x0
@@ -416,11 +416,12 @@ def UTF16LEtoUTF8(inbytes):
 class displaystub(dshell.Decoder):
 
     def __init__(self):
-        dshell.Decoder.__init__(self,
-                                name='smbdecoder',
-                                description='Intermediate class to support SMB based decoders.',
-                                longdescription="See source code or pydoc for details on use."
-                               )
+        dshell.Decoder.__init__(
+            self,
+            name='smbdecoder',
+            description='Intermediate class to support SMB based decoders.',
+            longdescription="See source code or pydoc for details on use."
+        )
 
 if __name__ == '__main__':
     dObj = displaystub()
