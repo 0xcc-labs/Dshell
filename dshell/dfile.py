@@ -54,7 +54,7 @@ class dfile(Blob):
         # update with additional info
         self.info(**kwargs)
         # update data
-        if data != None:
+        if data is not None:
             self.update(data)
 
     def __iter__(self):
@@ -117,7 +117,7 @@ class dfile(Blob):
 
         '''
         olddiskpath = self.diskpath
-        if name == None:
+        if name is None:
             name = self.name
         self.diskpath = self.__localfilename(name, path, clobber)
         if self.mode == FILEINMEMORY:
@@ -136,7 +136,7 @@ class dfile(Blob):
         if self.mode != FILEINMEMORY:
             return
         # if offsets are not being provided, just keep packets in wire order
-        if offset == None:
+        if offset is None:
             offset = self.endoffset
         # don't buffer duplicate packets
         if offset not in self.segments:
