@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 
-import sys
-
 from setuptools import setup, find_packages
-from setuptools.command.test import test as TestCommand
 
 
 install_requires = [
@@ -24,8 +21,6 @@ setup(
     name='dshell',
     version='3.0.0',
     description='An extensible network forensic analysis framework.',
-    author='wglodek',
-    author_email='wglodek@breakpoint-labs.com',
     packages=find_packages(),
     install_requires=install_requires,
     license='MIT',
@@ -35,7 +30,7 @@ setup(
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
         'Natural Language :: English',
-        'License :: OSI Approved :: Apache Software License',
+        'License :: OSI Approved :: MIT License',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2.7',
     ),
