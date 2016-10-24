@@ -2,9 +2,9 @@
 @author: amm
 '''
 
-import output
-import util
 import dshell
+from dshell.output import output
+from dshell import util
 import sys
 import cgi
 import datetime

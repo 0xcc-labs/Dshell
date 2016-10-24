@@ -3,8 +3,8 @@
 '''
 
 import dshell
-import dfile
-import output
+from dshell import dfile
+from dshell.output import output
 import datetime
 import json
 import base64

@@ -8,7 +8,7 @@ import sys
 import logging
 import struct
 import datetime
-import util
+from dshell import util
 
 
 class Output(object):

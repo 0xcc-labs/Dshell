@@ -2,7 +2,7 @@
 @author: tparker
 '''
 
-from dshell import output
+from dshell.output import output
 from xml.etree import ElementTree as ET
 
 

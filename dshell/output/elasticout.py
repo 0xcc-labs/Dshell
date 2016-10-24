@@ -5,7 +5,7 @@ Created on May 6, 2015
 '''
 
 import output
-import dfile
+from dshell import dfile
 import logging
 import datetime
 import elasticsearch
