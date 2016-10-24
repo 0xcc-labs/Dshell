@@ -119,7 +119,7 @@ class dfile(Blob):
         olddiskpath = self.diskpath
         if name is None:
             name = self.name
-        self.diskpath = self.__localfilename(name, path, clobber)
+        self.diskpath = self.generate_local_filename(name, path, clobber)
         if self.mode == FILEINMEMORY:
             fh = open(self.diskpath, 'w')
             fh.write(self.data())
@@ -148,7 +148,7 @@ class dfile(Blob):
     #
     # Generate a local (extracted) filename based on the original
     #
-    def __localfilename(self, origname, path='.', clobber=False):
+    def generate_local_filename(self, origname, path='.', clobber=False):
         tmp = origname.replace("\\", "_")
         tmp = tmp.replace("/", "_")
         tmp = tmp.replace(":", "_")
