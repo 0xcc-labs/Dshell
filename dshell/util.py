@@ -4,8 +4,9 @@ import time
 import socket
 import struct
 import datetime
+from .exceptions import DshellException
 
-# dShell Utility Functions
+# Dshell Utility Functions
 
 
 def xor(input, key):
@@ -14,6 +15,7 @@ def xor(input, key):
     """
     output = ''.join([chr(ord(c) ^ key) for c in input])
     return output
+
 
 # decode_base64 - decodes Base64 text with (optional) custom alphabet
 #
@@ -24,19 +26,14 @@ def xor(input, key):
 #    padchar:  char, single character used for padding bytes in input (optional)
 # Returns: decoded string
 #
-
-
 def decode_base64(intext, alphabet='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/', padchar='=', debug=False):
 
     # Build dictionary from alphabet
     b64DictDec = {}
-    i = 0
-    for c in alphabet:
+    for i, c in enumerate(alphabet):
         if c in b64DictDec:
-            print '%c already exists in alphabet' % (c)
-            sys.exit(-1)
+            raise DshellException('%c already exists in alphabet'.format(c))
         b64DictDec[c] = i
-        i += 1
 
     b64DictDec[padchar] = 0
     alphabet += padchar
