@@ -8,8 +8,6 @@ def data_file_obj():
 
 
 def test_dfile_initializations(data_file_obj):
-    print type(data_file_obj)
-    print dir(data_file_obj)
     assert data_file_obj is not None
 
 
