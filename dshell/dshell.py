@@ -80,18 +80,9 @@ class Decoder(object):
         self.subDecoder = None  # decoder to pass output to for chaining
 
         # set flags to indicate if handlers are present
-        if 'packetHandler' in dir(self):
-            self.isPacketHandlerPresent = True
-        else:
-            self.isPacketHandlerPresent = False
-        if 'connectionHandler' in dir(self):
-            self.isConnectionHandlerPresent = True
-        else:
-            self.isConnectionHandlerPresent = False
-        if 'blobHandler' in dir(self):
-            self.isBlobHandlerPresent = True
-        else:
-            self.isBlobHandlerPresent = False
+        self.isPacketHandlerPresent = hasattr(self, 'packetHandler')
+        self.isConnectionHandlerPresent = hasattr(self, 'connectionHandler')
+        self.isBlobHandlerPresent = hasattr(self, 'blobHandler')
 
         # for connection tracking, if applicable
         self.connectionsDict = {}
@@ -301,7 +292,7 @@ class Decoder(object):
         # connection close handler
         # will be called regardless of conn.stop right before conn object is
         # destroyed
-        if 'connectionCloseHandler' in dir(self):
+        if hasattr(self, 'connectionCloseHandler'):
             self.connectionCloseHandler(conn)
         # discard but check first in case a handler deleted it
         if conn.addr in self.connectionsDict:
@@ -361,7 +352,7 @@ class Decoder(object):
                 addr = (addr[1], addr[0])
             # create connection and call init handler
             conn = Connection(self, addr=addr, ts=ts, **kwargs)
-            if 'connectionInitHandler' in dir(self):
+            if hasattr(self, 'connectionInitHandler'):
                 self.connectionInitHandler(conn)
             # save in state dict
             self.connectionsDict[addr] = conn
@@ -436,7 +427,7 @@ class Decoder(object):
                 pkt = pkt.data
             # will call self.rawHandler(len,pkt,ts)
             # (hdr,data) is the PCAP header and raw packet data
-            if 'rawHandler' in dir(self):
+            if hasattr(self, 'rawHandler'):
                 self.rawHandler(pktlen, pkt, ts, **kw)
             else:
                 pass
