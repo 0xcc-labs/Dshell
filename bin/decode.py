@@ -9,11 +9,11 @@ import gzip
 import logging
 import optparse
 import os
-import output
+import dshell.output as output
 import sys
 import tempfile
 import traceback
-import util
+import dshell.util as util
 import zipfile
 try:
     import pcap
@@ -148,7 +148,6 @@ def decode_live(out, options, decoder, decoder_args, decoder_options):
 
     # give the interface name to the decoder
     decoder.input_file = options.interface
-    stats = None
     if options.verbose:
         log('Attempting to listen on %s' % options.interface)
     try:
@@ -184,8 +183,6 @@ def expandCompressedFile(fname, verbose, tmpdir):
             log('+Attempting to process %s compressed file' % (ext))
         if ext == '.gz':
             f = gzip.open(fname, 'rb')
-        elif ext == '.bz2':
-            f = bz2.BZ2File(fname, 'r')
         elif ext == '.zip':
             print "Enter password for .zip file [default:none]:",
             pswd = raw_input()
@@ -339,7 +336,7 @@ def initDecoderOptions(decoder, out, options, decoder_args, decoder_options):
         decoder._DEBUG = options.debug
 
     # override decoder BPF
-    if options.bpf != None:
+    if options.bpf is not None:
         decoder.filter = options.bpf
 
     # override decoder filterfn
@@ -347,7 +344,7 @@ def initDecoderOptions(decoder, out, options, decoder_args, decoder_options):
         decoder.filterfn = lambda addr: True
 
     # read BPF from file
-    if options.filefilter != None:
+    if options.filefilter is not None:
         try:
             tmpbpf = readInFilter(options.filefilter)
         except:
@@ -358,7 +355,7 @@ def initDecoderOptions(decoder, out, options, decoder_args, decoder_options):
         decoder.filter = tmpbpf
 
     # extend bpf filter if necessary
-    if options.ebpf != None:
+    if options.ebpf is not None:
         ebpf = options.ebpf
         if not decoder.filter:
             decoder.filter = ebpf
@@ -367,10 +364,11 @@ def initDecoderOptions(decoder, out, options, decoder_args, decoder_options):
         else:
             decoder.filter = decoder.filter + ' and ' + ebpf
 
-    # do we change the layer-2 decoder for raw capture
-    if options.layer2:
-        import dpkt
-        decoder.l2decoder = eval('dpkt.' + options.layer2)
+    # # do we change the layer-2 decoder for raw capture
+    # # TODO: FIX THIS
+    # if options.layer2:
+    #     import dpkt
+    #     decoder.l2decoder = eval('dpkt.' + options.layer2)
 
     # strip extra layers?
     if options.striplayers:
@@ -391,22 +389,22 @@ def initDecoderOptions(decoder, out, options, decoder_args, decoder_options):
 
 def main(*largs, **kwargs):
     global log
-    bin_path = os.environ['BINPATH']
+    bin_path = os.environ.get('BINPATH', None)
     sys.path.insert(0, bin_path)
     # get map of name to module import path
-    decoder_map = getDecoders(setDecoderPath(os.environ['DECODERPATH']))
+    decoder_map = getDecoders(setDecoderPath(os.environ.get('DECODERPATH', '.')))
 
     # The main argument parser. It will have every command line option
     # available and should be used when actually parsing
     parser = dshellOptionParser(
         usage="usage: %prog [options] [decoder options] file1 file2 ... filen [-- [decoder args]+]",
-        version="%prog " + str(dshell.__version__), add_help_option=False)
+        version="%prog 3.0.0", add_help_option=False)
     # A short argument parser, meant to only hold the shorter list of
     # arguments for when a decoder is called without a pcap file. DO
     # NOT USE for any serious argument parsing.
     parser_short = dshellOptionParser(
         usage="usage: %prog [options] [decoder options] file1 file2 ... filen [-- [decoder args]+]",
-        version="%prog " + str(dshell.__version__), add_help_option=False)
+        version="%prog 3.0.0", add_help_option=False)
     parser.add_option('-h', '-?', '--help', dest='help',
                       help="Print common command-line flags and exit", action='store_true',
                       default=False)
@@ -535,7 +533,7 @@ def main(*largs, **kwargs):
     # parse basic options and crdate the options object
     options = parser.parse_args(args, **kwargs)[0]
 
-    if options == None:
+    if options is None:
         print "\nError processing provided arguments"
         return
 
@@ -606,7 +604,7 @@ def main(*largs, **kwargs):
                 out = outmod.obj(*a[1:], **kw)
 
         # set the output format
-        if options.oformat != None:
+        if options.oformat is not None:
             out.setformat(options.oformat)
 
     # set global log functions
@@ -627,7 +625,7 @@ def main(*largs, **kwargs):
     decoders = {}
     decoderNames = set()
     # check for a decoder
-    if options.decoder != None:
+    if options.decoder is not None:
         # single decoder or came from config file
         if type(options.decoder) == str:
             options.decoder = util.strtok(
@@ -741,7 +739,7 @@ def main(*largs, **kwargs):
         #######################################################################
         # listen live on the interface
         # this will not process any files
-    if options.interface != None:
+    if options.interface is not None:
         if len(decoders) != 1:
             print 'Can only run one module live on an interface'
             return
