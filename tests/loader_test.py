@@ -1,5 +1,6 @@
 import pytest
 import dshell
+import pcap
 from dshell.loader import find_decoders, import_decoder, print_decoder_info, parse_bpf
 import StringIO
 
@@ -48,3 +49,24 @@ or port 443
 ''')
     ret = parse_bpf(with_comments_bpf)
     assert ret == no_comments_bpf.getvalue()
+
+
+def test_pcap_reader_with_filter():
+    bpf = StringIO.StringIO('''port 80  # this is a comment
+or port 443
+''')
+    filter_ = parse_bpf(bpf)
+    reader = pcap.pcap('./tests/pcap/http.cap')
+    reader.setfilter(filter_)
+    # there are 41 packets that match this filter expression
+    for i, (ts, packet) in enumerate(reader):
+        pass
+    assert i == 40
+
+
+def test_pcap_reader_with_invalid_filter():
+    bpf = StringIO.StringIO('''foo 80  # this is a comment''')
+    filter_ = parse_bpf(bpf)
+    reader = pcap.pcap('./tests/pcap/http.cap')
+    with pytest.raises(OSError):
+        reader.setfilter(filter_)
