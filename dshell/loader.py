@@ -1,17 +1,60 @@
 import pkgutil
 import decoders
+import output
+from exceptions import MissingDecoder
+
+
+def list_available_decoders():
+    available_decoders = find_decoders()
+    decoders = []
+    for (importer, decoder_name) in available_decoders:
+        decoders.append(import_decoder(importer, decoder_name))
+    print_decoder_info(decoders)
 
 
 def find_decoders():
     '''find all available decoders'''
-    for module_loader, name, ispkg in pkgutil.walk_packages(path=decoders.__path__, prefix=decoders.__name__ + '.'):
+    for module_loader, name, ispkg in pkgutil.walk_packages(
+        path=decoders.__path__,
+        prefix='{}.'.format(decoders.__name__)
+    ):
         if not ispkg:
             yield module_loader, name
+
+
+def decoder_lookup_helper(decoder_name, decoder_full_path):
+    '''helper function to link decoder name to the full path'''
+    for elem in decoder_full_path:
+        if elem.endswith(decoder_name):
+            return elem
+    raise MissingDecoder
+
+
+def find_outputters():
+    for module_loader, name, ispkg in pkgutil.walk_packages(
+        path=output.__path__,
+        prefix='{}.'.format(output.__name__)
+    ):
+        if not ispkg:
+            yield module_loader, name
+
+
+def import_outputter(importer, module_name):
+    '''import a specific outputter'''
+    # TODO: Currently only supports the default output (TextOutput)
+    return importer.find_module(module_name).load_module(module_name).TextOutput()
 
 
 def import_decoder(importer, module_name):
     '''import a specific decoder'''
     return importer.find_module(module_name).load_module(module_name).DshellDecoder()
+
+
+def load_outputter(outputter_name):
+    available_outputters = find_outputters()
+    for importer, name in available_outputters:
+        if name.endswith(outputter_name):
+            return import_outputter(importer, name)
 
 
 def print_decoder_info(decoders):
