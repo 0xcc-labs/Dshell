@@ -26,7 +26,7 @@ setup(
     license='MIT',
     zip_safe=False,
     test_suite='tests',
-    scripts=['bin/decode.py'],
+    scripts=['bin/decode.py', 'bin/new_decode.py'],
     classifiers=(
         'Development Status :: 5 - Production/Stable',
         'Intended Audience :: Developers',
