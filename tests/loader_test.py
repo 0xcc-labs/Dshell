@@ -1,7 +1,10 @@
 import pytest
 import dshell
 import pcap
-from dshell.loader import find_decoders, import_decoder, print_decoder_info, parse_bpf
+from dshell.loader import (
+    find_decoders, import_decoder,
+    print_decoder_info, parse_bpf,
+)
 import StringIO
 
 
